@@ -93,9 +93,11 @@ class FluentHandler(logging.Handler):
                  host='localhost',
                  port=24224,
                  timeout=3.0,
-                 verbose=False):
+                 verbose=False,
+                 name_as_label=True):
 
         self.tag = tag
+        self.name_as_label = name_as_label
         self.sender = sender.FluentSender(tag,
                                           host=host, port=port,
                                           timeout=timeout, verbose=verbose)
@@ -103,7 +105,8 @@ class FluentHandler(logging.Handler):
 
     def emit(self, record):
         data = self.format(record)
-        self.sender.emit(None, data)
+        label = record.name if self.name_as_label else None
+        self.sender.emit(label, data)
 
     def close(self):
         self.acquire()
